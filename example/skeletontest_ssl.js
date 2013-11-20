@@ -10,14 +10,22 @@ var sslCerts = {
 var myProxy = proxy.createProxyServer({
                                         sslCerts: sslCerts,
                                         sslSockDir: '/tmp',
-                                        port: 8080,
-                                        transSslPort: 8081,
+                                        port: 18080,
+                                        transSslPort: 18081,
                                         via: 'my test proxy/1.1' // use false to turn off via
                                     });
 
 
+// Whether or not to reject a client SSSL connection
+myProxy.on('shouldRejectSSL', function (request, callback) {
+    console.log('shouldRejectSSL', request.hostName, request.socket.remoteAddress);
+    // if callback(true), we return a 407
+    callback(false);
+});
+
 // Whether or not to reject a client
 myProxy.on('shouldReject', function (request, callback) {
+    console.log('shouldReject', request.connection.remoteAddress);
     // if callback(true), we return a 407
     callback(false);
 });
